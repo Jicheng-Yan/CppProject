@@ -10,13 +10,13 @@ add_custom_target(check
     COMMAND echo [----] Running tests
     USES_TERMINAL
     COMMAND ${CMAKE_CTEST_COMMAND}  --output-on-failure -C Debug
-    DEPENDS exampleApp unittests)
+    DEPENDS  testfoo)
 
 add_custom_target(checkVerbose
     COMMAND echo [----] Running tests
     USES_TERMINAL
     COMMAND ${CMAKE_CTEST_COMMAND}  -V --output-on-failure -C Debug
-    DEPENDS exampleApp unittests)
+    DEPENDS  testfoo)
 
 #------------------------------------------------------------------------------
 # CTest test suite
@@ -29,8 +29,8 @@ add_custom_target(checkVerbose
 
 
 # Basic runable tests (will not crash)
-add_test(NAME "Is_Runable "
-    COMMAND $<TARGET_FILE:exampleApp>)
+#add_test(NAME "Is_Runable "
+#    COMMAND $<TARGET_FILE:exampleApp>)
 
 #add_test(NAME "Is_Runable-v"
 #    COMMAND $<TARGET_FILE:exampleApp> -v)
@@ -44,8 +44,13 @@ add_test(NAME "Is_Runable "
 
 # Add unit test to CTest suite as one of the tests
 # unit test build is located in source/unittest/CMakeLists.txt
-add_test(NAME "google_unit_tests"
-    COMMAND $<TARGET_FILE:unittests>
+add_test(NAME "testfoo"
+    COMMAND $<TARGET_FILE:testfoo>
+    USES_TERMINAL
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+
+add_test(NAME "testBubbleSort"
+    COMMAND $<TARGET_FILE:testBubbleSort>
     USES_TERMINAL
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 

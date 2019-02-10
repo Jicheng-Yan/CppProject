@@ -30,43 +30,30 @@ include_directories (${gflags_INCLUDE_DIR})
 
 #-------------------------------------------------------------------------------
 # exampleApp executable setup
-set(ICON_RESOURCE "")
-if(WIN32) #windows icon resource file, provided from /packaging directory
-    set(ICON_RESOURCE "${PROJECT_BINARY_DIR}/exampleApp.icon.rc")
-elseif (APPLE) #osx icon ressource file, provided from /packaging directory
-    set(ICON_RESOURCE "${PROJECT_SOURCE_DIR}/packaging/exampleApp.icns")
-endif()
+#set(ICON_RESOURCE "")
+#if(WIN32) #windows icon resource file, provided from /packaging directory
+#    set(ICON_RESOURCE "${PROJECT_BINARY_DIR}/exampleApp.icon.rc")
+#elseif (APPLE) #osx icon ressource file, provided from /packaging directory
+#    set(ICON_RESOURCE "${PROJECT_SOURCE_DIR}/packaging/exampleApp.icns")
+#endif()
 
-add_executable(exampleApp MACOSX_BUNDLE
-    ${ICON_RESOURCE}
-    ${CMAKE_CURRENT_BINARY_DIR}/version.cpp
-    SomeClass.cpp
-    SomeClass.h
-    main.cpp)
-add_dependencies(exampleApp versionFileTouchForRebuild) # We want precise time of build in version
-target_include_directories(exampleApp PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_include_directories(exampleApp SYSTEM PRIVATE ${EXTERNAL_SPDLOG_INCLUDE_DIR})
-
-target_link_libraries (exampleApp PRIVATE ${CMAKE_THREAD_LIBS_INIT} gflags)
-
-if(APPLE)
-    set_target_properties(exampleApp PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "exampleApp")
-    set_target_properties(exampleApp PROPERTIES MACOSX_BUNDLE_BUNDLE_GUI_IDENTIFIER "com.exampleApp.exampleApp")
-    set_target_properties(exampleApp PROPERTIES MACOSX_BUNDLE_ICON_FILE exampleApp.icns)
-    set_target_properties(exampleApp PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${PROJECT_SOURCE_DIR}/packaging/MacOSXBundleInfo.plist.in)
-    set_source_files_properties(${PROJECT_SOURCE_DIR}/packaging/exampleApp.icns PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
-endif()
-
-install(TARGETS exampleApp
-    BUNDLE DESTINATION "."
-    RUNTIME DESTINATION bin)
+#add_executable(exampleApp MACOSX_BUNDLE
+#    ${ICON_RESOURCE}
+#    ${CMAKE_CURRENT_BINARY_DIR}/version.cpp
+#    SomeClass.cpp
+#    SomeClass.h
+#    main.cpp)
+#add_dependencies(exampleApp versionFileTouchForRebuild) # We want precise time of build in version
+#target_include_directories(exampleApp PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+#target_include_directories(exampleApp SYSTEM PRIVATE ${EXTERNAL_SPDLOG_INCLUDE_DIR})
+#target_link_libraries (exampleApp PRIVATE ${CMAKE_THREAD_LIBS_INIT} gflags)
 
 # Using macro from cmake/cleanCpppExtensions.cpp included on the top
 # Provides exampleApp-run and exampleApp-dbg
-addRunAndDebugTargets(exampleApp)
+#addRunAndDebugTargets(exampleApp)
 
 # short convenience target from cmake/cleanCpppExtensions.cpp
-add_custom_target(run DEPENDS exampleApp-run)
+#add_custom_target(run DEPENDS exampleApp-run)
 
 # Manually specified convenience target for running the binary, we use macro
 # add_custom_target(exampleApp-run
@@ -96,37 +83,40 @@ add_custom_target(run DEPENDS exampleApp-run)
 # target_include_directories(exampleApp SYSTEM ${OPENGL_INCLUDE_DIRS} ${GLUT_INCLUDE_DIRS} )
 # target_link_libraries(exampleApp ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} )
 
-#------------------------------------------------------------------------------
-# Unit tests
 
+enable_testing()
+
+add_subdirectory(main)
+add_subdirectory(libfoo)
+add_subdirectory(libbar)
+add_subdirectory(algorithms)
 add_subdirectory(unittest)
 
 #-------------------------------------------------------------------------------
 # Copy MINGW needed libraries for building on windows
+#if(MINGW)
+#    message(STATUS "MinGW detected")
+#    get_filename_component(GCC_PATH ${CMAKE_C_COMPILER} PATH)
+#    if(${GCC_PATH} MATCHES "mingw64/bin")
+#        set(libgcc "libgcc_s_seh-1.dll") #64bit
+#        message(STATUS "  64bit dlls is building")
+#    else()
+#        set(libgcc "libgcc_s_dw2-1.dll") #32bit
+#        message(STATUS "  32bit dlls is building")
+#    endif()
 
-if(MINGW)
-    message(STATUS "MinGW detected")
-    get_filename_component(GCC_PATH ${CMAKE_C_COMPILER} PATH)
-    if(${GCC_PATH} MATCHES "mingw64/bin")
-        set(libgcc "libgcc_s_seh-1.dll") #64bit
-        message(STATUS "  64bit dlls is building")
-    else()
-        set(libgcc "libgcc_s_dw2-1.dll") #32bit
-        message(STATUS "  32bit dlls is building")
-    endif()
-
-    install(FILES ${GCC_PATH}/${libgcc}
-        ${GCC_PATH}/libwinpthread-1.dll
-        ${GCC_PATH}/libstdc++-6.dll
-        DESTINATION ./bin/
-    )
-endif(MINGW)
+#    install(FILES ${GCC_PATH}/${libgcc}
+#        ${GCC_PATH}/libwinpthread-1.dll
+#        ${GCC_PATH}/libstdc++-6.dll
+#        DESTINATION ./bin/
+#    )
+#endif(MINGW)
 
 
 #------------------------------------------------------------------------------
 # Other MISC targets
 
 # Adds misc targets: format, cppcheck, tidy, see cmake/cleanCppExtensions.cmake
-addMiscTargets()
+#addMiscTargets()
 
 
