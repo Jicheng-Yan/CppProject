@@ -1,5 +1,6 @@
 include(ExternalProject)
 find_package(Git REQUIRED)
+find_package(Threads REQUIRED)
 # find_package(Hg REQUIRED)
 
 
@@ -29,7 +30,6 @@ add_custom_target(external-Catch-update
 # set include directory
 set(EXTERNAL_CATCH_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Catch/src/Catch/single_include/catch2" PARENT_SCOPE)
 
-
 # Examples for External Projects
 # #------------------------------------------------------------------------------
 # # nlohmann/json
@@ -58,31 +58,32 @@ set(EXTERNAL_CATCH_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Catch/src/Catch/sing
 # set(EXTERNAL_JSON_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Json/src/Json/src" PARENT_SCOPE)
 #
 #
-# #------------------------------------------------------------------------------
-# # spdlog
-# #  * sets EXTERNAL_SPDLOG_INCLUDE_DIR 
-#
-# ExternalProject_Add(
-#     spdlog
-#     PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/spdlog
-#     GIT_REPOSITORY https://github.com/gabime/spdlog.git
-#     # For shallow git clone (without downloading whole history)
-#     # GIT_SHALLOW 1
-#     # For point at certain tag
-#     # GIT_TAG 1.5.7
-#     #disables auto update on every build
-#     UPDATE_DISCONNECTED 1
-#     #disable following
-#     CONFIGURE_COMMAND "" BUILD_COMMAND "" INSTALL_DIR "" INSTALL_COMMAND ""
-#     )
-# # Update spdlog target
-# add_custom_target(external-spdlog-update
-#     COMMENT "Updated gabime/spdlog"
-#     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/spdlog/src/spdlog
-#     COMMAND ${GIT_EXECUTABLE} pull
-#     DEPENDS spdlog)
-# # set include directory
-# set(EXTERNAL_SPDLOG_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/spdlog/src/spdlog/include" PARENT_SCOPE)
+#------------------------------------------------------------------------------
+# spdlog
+#  * sets EXTERNAL_SPDLOG_INCLUDE_DIR 
+
+ExternalProject_Add(
+    spdlog
+    PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/spdlog
+    GIT_REPOSITORY https://github.com/gabime/spdlog.git
+    # For shallow git clone (without downloading whole history)
+    # GIT_SHALLOW 1
+    # For point at certain tag
+    # GIT_TAG 0.14.0
+    #disables auto update on every build
+    UPDATE_DISCONNECTED 1
+    #disable following
+    CONFIGURE_COMMAND "" BUILD_COMMAND "" INSTALL_DIR "" INSTALL_COMMAND ""
+    )
+# Update spdlog target
+add_custom_target(external-spdlog-update
+    COMMENT "Updated gabime/spdlog"
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/spdlog/src/spdlog
+    COMMAND ${GIT_EXECUTABLE} pull
+    DEPENDS spdlog)
+# set include directory
+set(EXTERNAL_SPDLOG_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/spdlog/src/spdlog/include" PARENT_SCOPE)
+
 #
 # #------------------------------------------------------------------------------
 # # whoshuu/cpr
@@ -126,7 +127,7 @@ set(EXTERNAL_CATCH_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Catch/src/Catch/sing
 # Convenience update all
 add_custom_target(external-update-all
     COMMENT "Updated all external projects"
-    DEPENDS external-Catch-update)
+    DEPENDS external-Catch-update external-spdlog-update gtest)
 
 add_custom_target(update
     COMMENT "Updated all external projects"

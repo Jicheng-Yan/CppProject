@@ -14,6 +14,8 @@ add_custom_target(versionFileTouchForRebuild
 #------------------------------------------------------------------------------
 # Libraries dependencies
 find_package (Threads REQUIRED) #threading
+find_package (gflags REQUIRED)
+include_directories (${gflags_INCLUDE_DIR})
 
 #------------------------------------------------------------------------------
 # By using macro to add common dependencies you can avoid repetition when you have
@@ -28,7 +30,6 @@ find_package (Threads REQUIRED) #threading
 
 #-------------------------------------------------------------------------------
 # exampleApp executable setup
-
 set(ICON_RESOURCE "")
 if(WIN32) #windows icon resource file, provided from /packaging directory
     set(ICON_RESOURCE "${PROJECT_BINARY_DIR}/exampleApp.icon.rc")
@@ -44,7 +45,9 @@ add_executable(exampleApp MACOSX_BUNDLE
     main.cpp)
 add_dependencies(exampleApp versionFileTouchForRebuild) # We want precise time of build in version
 target_include_directories(exampleApp PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries (exampleApp PRIVATE ${CMAKE_THREAD_LIBS_INIT})
+target_include_directories(exampleApp SYSTEM PRIVATE ${EXTERNAL_SPDLOG_INCLUDE_DIR})
+
+target_link_libraries (exampleApp PRIVATE ${CMAKE_THREAD_LIBS_INIT} gflags)
 
 if(APPLE)
     set_target_properties(exampleApp PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "exampleApp")
