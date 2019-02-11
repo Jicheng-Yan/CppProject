@@ -90,6 +90,7 @@ add_subdirectory(main)
 add_subdirectory(libfoo)
 add_subdirectory(libbar)
 add_subdirectory(algorithms)
+add_subdirectory(design-patterns)
 add_subdirectory(unittest)
 
 #-------------------------------------------------------------------------------
